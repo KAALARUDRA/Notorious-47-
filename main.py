@@ -14,7 +14,6 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
-keep_alive()
 # main.py - Updated with dynamic bad words, welcome message, prefix
 import discord
 from discord.ext import commands
@@ -282,9 +281,10 @@ async def autorole(ctx, role: discord.Role = None):
         config["autorole"] = role.id
         await ctx.send(f"✅ Auto-role set to {role.mention}")
     save_config()
-
+    
+keep_alive()
 # ========== RUN BOT ==========
-TOKEN = "MTQ5MDkwNjg1NDk3MTQwODUwNQ.G6-HOf.Ufi73qMCDNkHsJNywTTZiQDCcOBlpN49-SdpJI"
+TOKEN = "MTQ5MDkwNjg1NDk3MTQwODUwNQ.GUsha_.Hj8ERduQTesM9CHkr6U2ZfSuvamgsRqz7qpi2w"
 if TOKEN == "YOUR_BOT_TOKEN_HERE":
     print("❌ Please add your bot token to the TOKEN variable!")
 else:
