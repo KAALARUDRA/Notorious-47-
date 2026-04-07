@@ -281,7 +281,34 @@ async def autorole(ctx, role: discord.Role = None):
         config["autorole"] = role.id
         await ctx.send(f"✅ Auto-role set to {role.mention}")
     save_config()
+# Add this import at the top of main.py (with your other imports)
+from discord import app_commands
 
+# Add this after @bot.event async def on_ready()
+# Find your existing on_ready function and add the sync line inside it
+@bot.event
+async def on_ready():
+    print(f"✅ {bot.user.name} is online!")
+    print(f"📊 Serving {len(bot.guilds)} servers")
+    
+    # ADD THIS LINE - Syncs slash commands with Discord
+    await bot.tree.sync()
+    print("✅ Slash commands synced!")
+    
+    await bot.change_presence(activity=discord.Game(name=f"{config['prefix']}help"))
+
+# Add a test slash command (add this anywhere after bot definition but before bot.run)
+@bot.tree.command(name="ping", description="Check bot latency")
+async def slash_ping(interaction: discord.Interaction):
+    await interaction.response.send_message(f"🏓 Pong! Latency: {round(bot.latency * 1000)}ms")
+
+@bot.tree.command(name="userinfo", description="Get information about a user")
+async def slash_userinfo(interaction: discord.Interaction, member: discord.Member = None):
+    member = member or interaction.user
+    embed = discord.Embed(title=f"👤 {member.name}", color=discord.Color.blue())
+    embed.add_field(name="ID", value=member.id)
+    embed.add_field(name="Joined Server", value=member.joined_at.strftime("%Y-%m-%d") if member.joined_at else "Unknown")
+    await interaction.response.send_message(embed=embed)
 # ========== RUN BOT ==========
 keep_alive()
 import os
