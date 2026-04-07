@@ -281,11 +281,9 @@ async def autorole(ctx, role: discord.Role = None):
         config["autorole"] = role.id
         await ctx.send(f"✅ Auto-role set to {role.mention}")
     save_config()
-    
-keep_alive()
+
 # ========== RUN BOT ==========
-TOKEN = "MTQ5MDkwNjg1NDk3MTQwODUwNQ.GUsha_.Hj8ERduQTesM9CHkr6U2ZfSuvamgsRqz7qpi2w"
-if TOKEN == "YOUR_BOT_TOKEN_HERE":
-    print("❌ Please add your bot token to the TOKEN variable!")
-else:
-    bot.run(TOKEN)
+keep_alive()
+import os
+TOKEN = os.environ.get('BOT_TOKEN')
+bot.run(TOKEN) # Ee line marannu pokalle! ✅
