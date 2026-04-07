@@ -40,6 +40,33 @@ with open("config.json", "r") as f:
     config = json.load(f)
 
 # Bot setup
+@bot.event
+async def on_ready():
+    print(f"✅ {bot.user.name} is online!")
+    print(f"📊 Serving {len(bot.guilds)} servers")
+    
+    # Load all cogs with detailed error reporting
+    cogs_to_load = ["automod", "music", "admin", "logs", "games"]
+    
+    for cog in cogs_to_load:
+        try:
+            await bot.load_extension(cog)
+            print(f"✅ Loaded: {cog}.py")
+        except commands.errors.ExtensionAlreadyLoaded:
+            print(f"⚠️ {cog}.py already loaded")
+        except commands.errors.ExtensionNotFound:
+            print(f"❌ {cog}.py not found - check file exists")
+        except Exception as e:
+            print(f"❌ Failed to load {cog}.py: {type(e).__name__} - {e}")
+    
+    await bot.change_presence(activity=discord.Game(name=f"{config['prefix']}help"))
+    
+    # Sync slash commands
+    try:
+        await bot.tree.sync()
+        print("✅ Slash commands synced!")
+    except Exception as e:
+        print(f"❌ Slash sync failed: {e}")
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=config["prefix"], intents=intents, help_command=None)
 
@@ -47,24 +74,16 @@ def save_config():
     with open("config.json", "w") as f:
         json.dump(config, f, indent=4)
 
-@bot.event
-async def on_ready():
-    print(f"✅ {bot.user.name} is online!")
-    print(f"📊 Serving {len(bot.guilds)} servers")
-    
-    # Load all cogs
-    try:
-        await bot.load_extension("automod")
-        await bot.load_extension("music")
-        await bot.load_extension("admin")
-        await bot.load_extension("logs")
-        await bot.load_extension("games")
-        print("✅ All modules loaded!")
-    except Exception as e:
-        print(f"Modules error: {e}")
-    
-    await bot.change_presence(activity=discord.Game(name=f"{config['prefix']}help"))
-
+@bot.command(name="listcogs")
+@commands.is_owner()
+async def list_cogs(ctx):
+    """List all loaded cogs (Owner only)"""
+    loaded = list(bot.extensions.keys())
+    if loaded:
+        await ctx.send(f"✅ Loaded cogs: {', '.join(loaded)}")
+    else:
+        await ctx.send("❌ No cogs loaded!")
+        
 # ========== BAD WORDS MANAGEMENT ==========
 @bot.group(name="badword")
 @commands.has_permissions(administrator=True)
